@@ -243,9 +243,9 @@ const useMagneticHover = (strength = 0.35) => {
   return { ref, position, handleMouseMove, handleMouseLeave };
 };
 
-// Gemini API call (Replace with your actual key before deploying)
+// Gemini API call (API key loaded from .env)
 const fetchGeminiRecommendation = async (age: string, interests: string, retries = 5, delay = 1000): Promise<any> => {
-  const apiKey = "AIzaSyCW1k9Mm3r0G5S_N0z7QvUgLhUhPGG0gFc"; // <--- PASTE YOUR API KEY HERE
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   
   const payload = {
@@ -314,7 +314,7 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
 };
 
 const callGemini = async (prompt: string, systemText: string, retries = 3, delay = 1000): Promise<string> => {
-  const apiKey = "AIzaSyCW1k9Mm3r0G5S_N0z7QvUgLhUhPGG0gFc"; // <--- PASTE YOUR API KEY HERE
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
