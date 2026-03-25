@@ -271,7 +271,7 @@ const useMagneticHover = (strength = 0.35) => {
 // Gemini API call (API key loaded from .env)
 const fetchGeminiRecommendation = async (age: string, interests: string, retries = 5, delay = 1000): Promise<GeminiResponse> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/"gemini-1.5-flash":generateContent?key=${apiKey}`;
   
   const payload = {
     contents: [{ 
@@ -340,7 +340,7 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
 
 const callGemini = async (prompt: string, systemText: string, retries = 3, delay = 1000): Promise<string> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/"gemini-1.5-flash":generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     systemInstruction: { parts: [{ text: systemText }] }
