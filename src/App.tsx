@@ -8,6 +8,30 @@ import {
   MessageCircle, Sparkles, Loader2
 } from 'lucide-react';
 
+// Types
+interface Recommendation {
+  courseName: string;
+  emoji: string;
+  reason: string;
+}
+
+interface GeminiResponse {
+  message: string;
+  recommendations: Recommendation[];
+}
+
+interface Review {
+  name: string;
+  text: string;
+}
+
+interface InputWrapperProps {
+  children: ReactNode;
+  label: string;
+  required?: boolean;
+  id: string;
+}
+
 // ==========================================
 // 1. GLOBAL STYLES & DATA
 // ==========================================
@@ -224,10 +248,10 @@ const REVIEWS = [
 // ==========================================
 
 const useMagneticHover = (strength = 0.35) => {
-  const ref = useRef<HTMLButtonElement | HTMLAnchorElement | HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!ref.current) return;
     const { clientX, clientY } = e;
     const { height, width, left, top } = ref.current.getBoundingClientRect();
@@ -244,7 +268,7 @@ const useMagneticHover = (strength = 0.35) => {
 };
 
 // Gemini API call (API key loaded from .env)
-const fetchGeminiRecommendation = async (age: string, interests: string, retries = 5, delay = 1000): Promise<any> => {
+const fetchGeminiRecommendation = async (age: string, interests: string, retries = 5, delay = 1000): Promise<GeminiResponse> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/
   "gemini-1.5-flash"-preview-09-2025:generateContent?key=${apiKey}`;
@@ -316,7 +340,7 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
 
 const callGemini = async (prompt: string, systemText: string, retries = 3, delay = 1000): Promise<string> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     systemInstruction: { parts: [{ text: systemText }] }
@@ -349,6 +373,7 @@ const CustomCursor = () => {
 
   useEffect(() => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVisible(true);
 
     const onMouseMove = (e: MouseEvent) => {
@@ -464,7 +489,7 @@ interface LiquidButtonProps {
   variant?: 'primary' | 'dark' | 'outline';
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   className?: string;
-  onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit';
   disabled?: boolean;
 }
@@ -494,8 +519,8 @@ const LiquidButton = ({ children, variant = 'primary', size = 'md', className = 
       type={type}
       onClick={onClick}
       disabled={disabled}
-      onMouseMove={handleMouseMove as any}
-      onMouseLeave={handleMouseLeave as any}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       whileHover={{ scale: disabled ? 1 : 1.04 }}
@@ -536,7 +561,7 @@ interface GradientButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
   asChild?: boolean;
 }
 
-const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
+const GradientButton = React.forwardRef<HTMLElement, GradientButtonProps>(
   ({ className = "", variant = "default", asChild = false, ...props }, ref) => {
     const baseClasses = "gradient-button inline-flex items-center justify-center rounded-[11px] min-w-[132px] px-9 py-4 text-base leading-[19px] font-[500] text-white font-sans font-bold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
     const variantClass = variant === "variant" ? "gradient-button-variant" : "";
@@ -547,7 +572,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
       <Comp
         ref={ref as any}
         className={`${baseClasses} ${variantClass} ${className}`}
-        {...props as any}
+        {...props}
       />
     );
   }
@@ -781,7 +806,7 @@ const Hero = () => {
   useEffect(() => {
     const t = setInterval(() => setWordIdx((p) => (p + 1) % words.length), 2000);
     return () => clearInterval(t);
-  }, []);
+  }, [words.length]);
 
   return (
     <section id="home" className="relative w-full">
@@ -1016,7 +1041,7 @@ const AICourseAdvisorModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [age, setAge] = useState('');
   const [interests, setInterests] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<GeminiResponse | null>(null);
   const [error, setError] = useState('');
 
   const handleAnalyze = async () => {
@@ -1029,7 +1054,7 @@ const AICourseAdvisorModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
     try {
       const res = await fetchGeminiRecommendation(age, interests);
       setResult(res);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -1095,7 +1120,7 @@ const AICourseAdvisorModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-2">
                 <p className="text-white/80 italic mb-6 text-sm bg-white/5 p-4 rounded-xl border border-white/10">"{result.message}"</p>
                 <div className="space-y-4 mb-8">
-                  {result.recommendations?.map((rec: any, i: number) => (
+                  {result.recommendations?.map((rec: Recommendation, i: number) => (
                     <div key={i} className="bg-[#E8C400]/10 border border-[#E8C400]/30 rounded-xl p-4">
                       <h4 className="font-serif text-xl font-bold text-[#E8C400] mb-2">{rec.emoji} {rec.courseName}</h4>
                       <p className="text-white/70 text-sm leading-relaxed">{rec.reason}</p>
@@ -1241,7 +1266,7 @@ const AIParentAssistant = () => {
     try {
       const res = await callGemini(question, sys);
       setAnswer(res);
-    } catch (e) {
+    } catch {
       setAnswer("I'm sorry, I'm having trouble connecting right now. Please call us at 9226538135!");
     }
     setLoading(false);
@@ -1568,7 +1593,7 @@ const Testimonials = () => {
   const row1 = [REVIEWS[0], REVIEWS[1], REVIEWS[2], REVIEWS[3]];
   const row2 = [REVIEWS[4], REVIEWS[5], REVIEWS[6], REVIEWS[0]];
 
-  const TestimonialCard = ({ review }: { review: any }) => (
+  const TestimonialCard = ({ review }: { review: Review }) => (
     <div className="w-[320px] sm:w-[360px] shrink-0 mr-5 relative bg-white/[0.04] border border-white/[0.07] backdrop-blur-[12px] rounded-[1.25rem] p-6 sm:p-7 overflow-hidden transition-all duration-300 hover:border-[#E8C400]/40 hover:shadow-[0_8px_32px_rgba(232,196,0,0.1)] hover:-translate-y-1">
       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#E8C400] to-[#C9982A] rounded-l-md" />
       
@@ -1699,7 +1724,7 @@ const AdmissionForm = () => {
     setDrafting(false);
   };
 
-  const InputWrapper = ({ children, label, required = true, id }: any) => (
+  const InputWrapper = ({ children, label, required = true, id }: InputWrapperProps) => (
     <div className="relative group w-full mb-5">
       {children}
       <label 
@@ -2028,8 +2053,8 @@ const FloatingSocialFAB = () => {
           href={active.link}
           target="_blank"
           rel="noreferrer"
-          onMouseMove={handleMouseMove as any}
-          onMouseLeave={handleMouseLeave as any}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
           animate={{ x: position.x, y: position.y }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
