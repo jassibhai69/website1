@@ -214,8 +214,8 @@ const BUSINESS_DATA = {
   email: "anstudyzone@gmail.com",
   whatsapp: "https://wa.me/919226538135",
   address: "B/G-10, Emmanuel CHSL, Shree Krishna Complex, Bhabola, Vasai West, Maharashtra 401202",
-  instagram: "https://instagram.com/anstudyzone",
-  facebook: "https://facebook.com/anstudyzone",
+  instagram: "https://www.instagram.com/anstudyzone",
+  facebook: "https://www.facebook.com/anstudyzone",
   logo: "/LogoNew.jpg", 
   storePhoto: "/WhatsApp Image 2025-09-16 at 04.32.07_94744dc9.jpg",
   courseBanner: "/an15x10_Final_m.jpg"
@@ -340,7 +340,7 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
 
 const callGemini = async (prompt: string, systemText: string, retries = 3, delay = 1000): Promise<string> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/"gemini-1.5-flash":generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     systemInstruction: { parts: [{ text: systemText }] }
@@ -2002,10 +2002,10 @@ const Footer = () => {
           <a href={BUSINESS_DATA.whatsapp} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-[#25D366]/15 border border-[#25D366]/30 flex items-center justify-center text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-110">
             <MessageCircle size={20} />
           </a>
-          <a href={BUSINESS_DATA.instagram} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-[#E1306C]/10 border border-[#E1306C]/25 flex items-center justify-center text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:border-transparent transition-all duration-300 hover:scale-110">
+          <a href={BUSINESS_DATA.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-[#E1306C]/10 border border-[#E1306C]/25 flex items-center justify-center text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:border-transparent transition-all duration-300 hover:scale-110">
             <Instagram size={20} />
           </a>
-          <a href={BUSINESS_DATA.facebook} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-[#1877F2]/15 border border-[#1877F2]/30 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all duration-300 hover:scale-110">
+          <a href={BUSINESS_DATA.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-[#1877F2]/15 border border-[#1877F2]/30 flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all duration-300 hover:scale-110">
             <Facebook size={20} />
           </a>
         </div>
