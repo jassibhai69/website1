@@ -273,28 +273,21 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
   
+  const safeAge = age.trim() || 'not specified';
+  const safeInterests = interests.trim() || 'general learning needs';
+  const userPrompt = age.trim() || interests.trim()
+    ? `Child's Age: ${safeAge}\nInterests/Needs: ${safeInterests}`
+    : 'Create a basic course outline for a general learner.';
+
   const payload = {
     contents: [{ 
       parts: [{ 
-        text: `Child's Age: ${age}\nInterests/Needs: ${interests}` 
+        text: userPrompt
       }] 
     }],
     systemInstruction: { 
       parts: [{ 
-        text: `You are a warm, expert educational counselor for "AN Study Zone" in Vasai West. 
-        Available Courses:
-        1. ABACUS (Age 5-14)
-        2. Vedic Mathematics (Age 8-16)
-        3. Tuition Classes (Class I-X, SSC/CBSE/ICSE)
-        4. Foreign Languages (French) (Age 5-14)
-        5. Reading & Writing Skills (Age 5-12)
-        6. Art & Craft (Age 5-14)
-        7. Elementary Drawing Exam (Age 5-16)
-        8. AI / IT / CA (Age 13+)
-        9. Phonics (Age 4-8)
-        10. Calligraphy (Age 8+)
-
-        Based on the child's age and interests, recommend the top 1 or 2 most suitable courses. Explain why.` 
+        text: `You are a warm, expert educational counselor for AN Study Zone in Vasai West. Available Courses: 1. ABACUS (Age 5-14) 2. Vedic Mathematics (Age 8-16) 3. Tuition Classes (Class I-X, SSC/CBSE/ICSE) 4. Foreign Languages (French) (Age 5-14) 5. Reading & Writing Skills (Age 5-12) 6. Art & Craft (Age 5-14) 7. Elementary Drawing Exam (Age 5-16) 8. AI / IT / CA (Age 13+) 9. Phonics (Age 4-8) 10. Calligraphy (Age 8+). Based on the child's age and interests, recommend the top 1 or 2 most suitable courses. Explain why.` 
       }] 
     },
     generationConfig: {
@@ -341,9 +334,11 @@ const fetchGeminiRecommendation = async (age: string, interests: string, retries
 const callGemini = async (prompt: string, systemText: string, retries = 3, delay = 1000): Promise<string> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const safePrompt = prompt.trim() || 'Create a basic course outline';
+  const safeSystemText = systemText.trim() || 'You are a helpful assistant for AN Study Zone in Vasai West.';
   const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-    systemInstruction: { parts: [{ text: systemText }] }
+    contents: [{ parts: [{ text: safePrompt }] }],
+    systemInstruction: { parts: [{ text: safeSystemText }] }
   };
   try {
     const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -1262,7 +1257,7 @@ const AIParentAssistant = () => {
   const handleAsk = async () => {
     if (!question.trim()) return;
     setLoading(true);
-    const sys = `You are the AI representative of "AN Study Zone" in Vasai West. Answer the parent's question concisely (2-3 sentences max) in a warm, encouraging tone. Highlight the founders (Ms. Amishi, Ms. Nitu) or relevant courses if applicable. Use the provided details.`;
+    const sys = `You are the AI representative of AN Study Zone in Vasai West. Answer the parent's question concisely (2-3 sentences max) in a warm, encouraging tone. Highlight the founders (Ms. Amishi, Ms. Nitu) or relevant courses if applicable. Use the provided details.`;
     try {
       const res = await callGemini(question, sys);
       setAnswer(res);
@@ -1714,7 +1709,7 @@ const AdmissionForm = () => {
   const handleAutoDraft = async () => {
     setDrafting(true);
     const prompt = `Parent: ${parentName || 'A parent'}, Child: ${childName || 'my child'} (Age: ${age || 'not specified'}), Interested in: ${selectedCourses?.length ? selectedCourses.join(', ') : 'your courses'}.`;
-    const sys = `You are a helpful assistant writing a short, extremely polite 2-sentence enquiry message for a parent to send to "AN Study Zone". Address the founders Ms. Amishi and Ms. Nitu. Use the provided details.`;
+    const sys = `You are a helpful assistant writing a short, extremely polite 2-sentence enquiry message for a parent to send to AN Study Zone. Address the founders Ms. Amishi and Ms. Nitu. Use the provided details.`;
     try {
       const result = await callGemini(prompt, sys);
       setValue('message', result.replace(/"/g, '').trim());
