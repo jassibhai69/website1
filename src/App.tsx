@@ -214,8 +214,8 @@ const BUSINESS_DATA = {
   email: "anstudyzone@gmail.com",
   whatsapp: "https://wa.me/919226538135",
   address: "B/G-10, Emmanuel CHSL, Shree Krishna Complex, Bhabola, Vasai West, Maharashtra 401202",
-  instagram: "https://www.instagram.com/anstudyzone",
-  facebook: "https://www.facebook.com/anstudyzone",
+  instagram: "https://www.instagram.com/anstudyzone?igsh=MWFyYW15eWh5bWhhYQ==",
+  facebook: "https://www.facebook.com/share/18kvsyZpCd/",
   logo: "/LogoNew.jpg", 
   storePhoto: "/WhatsApp Image 2025-09-16 at 04.32.07_94744dc9.jpg",
   courseBanner: "/an15x10_Final_m.jpg"
@@ -2052,7 +2052,7 @@ const FloatingSocialFAB = () => {
           ref={ref as any}
           href={active.link}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           animate={{ x: position.x, y: position.y }}
